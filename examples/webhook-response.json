@@ -1,0 +1,156 @@
+{
+    "status": "completed",
+    "fua_document": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Ffua_document_TEST-2.pdf",
+    "data": {
+        "reference": "TEST-2",
+        "service_priority": "alta",
+        "inspection_date": "2026-02-16",
+        "requester": {
+            "company_legal_name": "HabiCapital",
+            "contact_name": "Operador HabiCapital",
+            "contact_email": "legalizacion@habicapital.com",
+            "contact_phone": "+573001234567",
+            "service_priority": "alta"
+        },
+        "property_identification": {
+            "property_address": {
+                "address": "Carrera 113 #19A-1",
+                "country_code": "CO",
+                "state_code": "11",
+                "city_code": "11001",
+                "state_name": "Quindio",
+                "city_name": "Armenia",
+                "neighborhood": null
+            },
+            "property_legal": null,
+            "latitude": 4.684151,
+            "longitude": -74.150922,
+            "stratum": null,
+            "property_type": {
+                "general": "urbano",
+                "subtype": 1,
+                "ph_regime": true
+            }
+        },
+        "owners": [],
+        "physical_characteristics": {
+            "areas_m2": {
+                "private_area": null,
+                "constructed_area": 40.0,
+                "terrace_area": null
+            },
+            "layout": {
+                "bedrooms": 2,
+                "bathrooms": 2,
+                "study": null,
+                "floor_number": 15,
+                "elevator": false
+            },
+            "construction": {
+                "build_age": 3,
+                "conservation_state": "bueno",
+                "finishes_level": "terminado"
+            }
+        },
+        "photos": [
+            {
+                "label": "fachada_principal",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Ffachada_principal_TEST-2.jpeg"
+            },
+            {
+                "label": "acceso_porteria",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Facceso_porteria_TEST-2.jpeg"
+            },
+            {
+                "label": "placa_direccion",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fplaca_direccion_TEST-2.jpeg"
+            },
+            {
+                "label": "sala",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fsala_TEST-2.jpeg"
+            },
+            {
+                "label": "comedor",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fcomedor_TEST-2.jpeg"
+            },
+            {
+                "label": "cocina",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fcocina_TEST-2.jpeg"
+            },
+            {
+                "label": "alcoba_principal",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Falcoba_principal_TEST-2.jpeg"
+            },
+            {
+                "label": "alcoba_secundaria",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Falcoba_secundaria_TEST-2.jpeg"
+            },
+            {
+                "label": "bano_principal",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fbano_principal_TEST-2.jpeg"
+            },
+            {
+                "label": "bano_social",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fbano_social_TEST-2.jpeg"
+            },
+            {
+                "label": "patio_terraza",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fpatio_terraza_TEST-2.jpeg"
+            },
+            {
+                "label": "zonas_comunes",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fzonas_comunes_TEST-2.jpeg"
+            },
+            {
+                "label": "parqueadero",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fparqueadero_TEST-2.jpeg"
+            },
+            {
+                "label": "deposito",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fdeposito_TEST-2.jpeg"
+            },
+            {
+                "label": "via_de_acceso",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fvia_de_acceso_TEST-2.jpeg"
+            },
+            {
+                "label": "entorno_urbano",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fentorno_urbano_TEST-2.jpeg"
+            },
+            {
+                "label": "instalaciones_mecanicas_medidores",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Finstalaciones_mecanicas_medidores_TEST-2.jpeg"
+            },
+            {
+                "label": "afectaciones_danos_humedades",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fafectaciones_danos_humedades_TEST-2.jpeg"
+            }
+        ],
+        "building_context": {
+            "complex_name": "No especificado",
+            "tower_or_block": "1",
+            "apartment_label": "1506",
+            "common_amenities": [
+                3,
+                5,
+                17,
+                25,
+                35
+            ],
+            "services_utilities": [
+                1,
+                2,
+                3
+            ],
+            "building_description": {
+                "total_tower_count": 1,
+                "total_units_count": 1,
+                "units_per_floor": null,
+                "total_building_floors": 1,
+                "basement_count": null
+            }
+        },
+        "webhook_url": "https://webhook.site/d04345ab-618b-4852-86e9-e99dc6ffa186",
+        "status": "completed"
+    }
+}

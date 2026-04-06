@@ -1,0 +1,1144 @@
+openapi: 3.0.3
+info:
+  title: FUA Service API
+  description: |
+    API for managing Unique Appraisal Forms (FUA).
+    
+    **Webhook Note:**
+    When a FUA is successfully created, the system will send a notification to the webhook_url 
+    provided in the request. The payload sent will be of type WebhookPayload.
+    
+    **Authentication:**
+    This API requires authentication using an API Key. Include the `X-API-Key` header in all requests. 
+    Contact the API administrator to obtain your API key.
+    
+    **Reference Tables:**
+    This API uses reference tables for property subtypes, photo labels, and common amenities. 
+    See the following schemas in the Components section for ID mappings:
+    - PropertySubtypesReference: Maps property subtype names to IDs (used in PropertyTypeRequest.subtype)
+    - PhotoLabelsReference: Maps photo label names to IDs (used in PhotoRequest.label_id)
+    - CommonAmenitiesReference: Maps common amenity names to IDs (used in BuildingContextRequest.common_amenities)
+  version: 1.0.0
+  contact:
+    name: avaluoenlinea
+
+servers:
+  - url: https://services.avaluoenlinea.com/fua-service
+    description: Production server
+
+tags:
+  - name: FUA
+    description: Operations related to Unique Appraisal Forms
+
+paths:
+  /:
+    post:
+      tags:
+        - FUA
+      summary: Create a new FUA
+      description: |
+        Creates a new Unique Appraisal Form with all required information.
+        
+        Once the FUA is fully processed, a notification will be sent 
+        to the provided webhook_url with a WebhookPayload type payload.
+      operationId: createFua
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFuaRequest'
+      responses:
+        '201':
+          description: FUA created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFuaResponse'
+        '400':
+          description: Validation error in the sent data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing API Key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /{reference}:
+    get:
+      tags:
+        - FUA
+      summary: Get FUA by reference
+      description: Returns a specific Unique Appraisal Form by its reference
+      operationId: getFuaByReference
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: reference
+          in: path
+          required: true
+          description: Unique FUA reference
+          schema:
+            type: string
+          example: "FUA-2024-001"
+      responses:
+        '200':
+          description: FUA retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FuaResponse'
+        '401':
+          description: Unauthorized - Invalid or missing API Key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: FUA not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API Key for authentication. Include this header in all requests (except health check endpoint).
+  
+  schemas:
+    CreateFuaRequest:
+      type: object
+      required:
+        - reference
+        - service_priority
+        - inspection_date
+        - requester
+        - property_identification
+        - physical_characteristics
+        - photos
+        - building_context
+        - webhook_url
+      properties:
+        reference:
+          type: string
+          description: Unique FUA reference
+          example: "FUA-2024-001"
+        service_priority:
+          $ref: '#/components/schemas/ServicePriorityEnum'
+        inspection_date:
+          type: string
+          format: date
+          description: Inspection date
+          example: "2024-01-15"
+        requester:
+          $ref: '#/components/schemas/RequesterRequest'
+        property_identification:
+          $ref: '#/components/schemas/PropertyIdentificationRequest'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/OwnerRequest'
+        physical_characteristics:
+          $ref: '#/components/schemas/PhysicalCharacteristicsRequest'
+        photos:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/PhotoRequest'
+        building_context:
+          $ref: '#/components/schemas/BuildingContextRequest'
+        webhook_url:
+          type: string
+          format: uri
+          description: Webhook URL where the notification will be sent when the FUA is complete
+          example: "https://example.com/webhook"
+
+    RequesterRequest:
+      type: object
+      required:
+        - company_legal_name
+        - contact_name
+        - contact_email
+        - contact_phone
+      properties:
+        company_legal_name:
+          type: string
+          example: "Empresa de Avaluos S.A."
+        contact_name:
+          type: string
+          example: "Juan Pérez"
+        contact_email:
+          type: string
+          format: email
+          example: "juan.perez@empresa.com"
+        contact_phone:
+          type: string
+          pattern: '^\S+$'
+          example: "+573001234567"
+
+    PropertyIdentificationRequest:
+      type: object
+      required:
+        - property_address
+        - latitude
+        - longitude
+        - property_type
+      properties:
+        property_address:
+          $ref: '#/components/schemas/PropertyAddressRequest'
+        property_legal:
+          $ref: '#/components/schemas/PropertyLegalRequest'
+        latitude:
+          type: number
+          format: double
+          example: 4.6097102
+        longitude:
+          type: number
+          format: double
+          example: -74.081749
+        stratum:
+          type: integer
+          minimum: 1
+          maximum: 6
+          example: 4
+        property_type:
+          $ref: '#/components/schemas/PropertyTypeRequest'
+
+    PropertyAddressRequest:
+      type: object
+      required:
+        - address
+        - country_code
+        - state_name
+        - city_name
+      properties:
+        address:
+          type: string
+          example: "Calle 123 #45-67"
+        country_code:
+          type: string
+          default: "CO"
+          example: "CO"
+        state_code:
+          type: string
+          nullable: true
+          example: "11"
+        city_code:
+          type: string
+          nullable: true
+          example: "11001"
+        state_name:
+          type: string
+          example: "Cundinamarca"
+        city_name:
+          type: string
+          example: "Bogotá D.C."
+        neighborhood:
+          type: string
+          example: "Chapinero"
+
+    PropertyLegalRequest:
+      type: object
+      required:
+        - property_registration
+        - certificate_of_tradition
+      properties:
+        property_registration:
+          type: string
+          example: "50C-123456"
+        cadastral_chip:
+          type: string
+          example: "1234567890"
+        property_coefficient:
+          type: number
+          format: double
+          example: 0.85
+        certificate_of_tradition:
+          type: string
+          format: uri
+          example: "https://example.com/certificate.pdf"
+        property_tax:
+          type: string
+          example: "TAX-123"
+        deed_acquisition:
+          type: string
+          example: "DEED-456"
+
+    PropertyTypeRequest:
+      type: object
+      required:
+        - general
+        - subtype
+        - ph_regime
+      properties:
+        general:
+          $ref: '#/components/schemas/PropertyGeneralTypeEnum'
+        subtype:
+          type: integer
+          format: int64
+          description: Property subtype ID. See PropertySubtypesReference schema for available IDs and names.
+          example: 1
+        ph_regime:
+          type: boolean
+          example: true
+
+    OwnerRequest:
+      type: object
+      required:
+        - name
+        - lastname
+        - id_type
+        - identification
+      properties:
+        name:
+          type: string
+          example: "María"
+        lastname:
+          type: string
+          example: "González"
+        id_type:
+          $ref: '#/components/schemas/IdTypeEnum'
+        identification:
+          type: integer
+          example: 1234567890
+        owner_identification:
+          type: string
+          example: "OWNER-123"
+
+    PhysicalCharacteristicsRequest:
+      type: object
+      required:
+        - areas_m2
+        - layout
+        - construction
+      properties:
+        areas_m2:
+          $ref: '#/components/schemas/AreasM2Request'
+        layout:
+          $ref: '#/components/schemas/LayoutRequest'
+        construction:
+          $ref: '#/components/schemas/ConstructionRequest'
+        property_units:
+          type: array
+          items:
+            $ref: '#/components/schemas/PropertyUnitRequest'
+
+    AreasM2Request:
+      type: object
+      required:
+        - constructed_area
+      properties:
+        private_area:
+          type: number
+          format: double
+          example: 85.5
+        constructed_area:
+          type: number
+          format: double
+          example: 120.0
+        terrace_area:
+          type: number
+          format: double
+          example: 15.0
+
+    LayoutRequest:
+      type: object
+      required:
+        - bedrooms
+        - bathrooms
+        - floor_number
+        - elevator
+      properties:
+        bedrooms:
+          type: integer
+          example: 3
+        bathrooms:
+          type: integer
+          example: 2
+        study:
+          type: boolean
+          example: true
+        floor_number:
+          type: integer
+          example: 5
+        elevator:
+          type: boolean
+          example: true
+
+    ConstructionRequest:
+      type: object
+      required:
+        - build_age
+        - conservation_state
+        - finishes_level
+      properties:
+        build_age:
+          type: integer
+          description: Building age in years
+          example: 10
+        conservation_state:
+          $ref: '#/components/schemas/ConservationStateEnum'
+        finishes_level:
+          $ref: '#/components/schemas/FinishesLevelEnum'
+
+    PropertyUnitRequest:
+      type: object
+      required:
+        - type
+        - public
+        - unit_id
+        - area
+      properties:
+        type:
+          $ref: '#/components/schemas/PropertyUnitTypeEnum'
+        public:
+          type: boolean
+          example: false
+        property_legal:
+          $ref: '#/components/schemas/PropertyLegalRequest'
+        unit_id:
+          type: string
+          example: "UNIT-001"
+        area:
+          type: number
+          format: double
+          example: 25.0
+
+    PhotoRequest:
+      type: object
+      required:
+        - label_id
+        - url
+      properties:
+        label_id:
+          type: integer
+          format: int64
+          description: Photo label ID. See PhotoLabelsReference schema for available IDs, names, and required status.
+          example: 1
+        url:
+          type: string
+          format: uri
+          example: "https://example.com/photo.jpg"
+
+    BuildingContextRequest:
+      type: object
+      required:
+        - complex_name
+        - tower_or_block
+        - apartment_label
+        - common_amenities
+        - services_utilities
+        - building_description
+      properties:
+        complex_name:
+          type: string
+          example: "Torres del Parque"
+        tower_or_block:
+          type: string
+          example: "Torre A"
+        apartment_label:
+          type: string
+          example: "501"
+        common_amenities:
+          type: array
+          description: Array of common amenity IDs. See CommonAmenitiesReference schema for available IDs and names.
+          items:
+            type: integer
+            format: int64
+          example: [1, 2, 3]
+        services_utilities:
+          type: array
+          items:
+            type: integer
+            format: int64
+          example: [1, 2]
+        building_description:
+          $ref: '#/components/schemas/BuildingDescriptionRequest'
+
+    BuildingDescriptionRequest:
+      type: object
+      required:
+        - total_tower_count
+        - total_units_count
+        - total_building_floors
+      properties:
+        total_tower_count:
+          type: integer
+          example: 3
+        total_units_count:
+          type: integer
+          example: 150
+        units_per_floor:
+          type: integer
+          example: 5
+        total_building_floors:
+          type: integer
+          example: 10
+        basement_count:
+          type: integer
+          example: 2
+
+    CreateFuaResponse:
+      type: object
+      properties:
+        reference:
+          type: string
+          example: "FUA-2024-001"
+        status:
+          $ref: '#/components/schemas/FuaStatusEnum'
+        inspection_date:
+          type: string
+          format: date
+          example: "2024-01-15"
+        property:
+          $ref: '#/components/schemas/PropertyResponse'
+        building:
+          $ref: '#/components/schemas/BuildingResponse'
+
+    PropertyResponse:
+      type: object
+      properties:
+        address:
+          type: string
+          example: "Calle 123 #45-67"
+        property_type:
+          type: string
+          example: "Apartamento"
+        property_registration:
+          type: string
+          example: "50C-123456"
+        area_m2:
+          $ref: '#/components/schemas/AreaM2Response'
+        layout:
+          $ref: '#/components/schemas/PropertyLayoutResponse'
+        garages_private:
+          type: integer
+          example: 1
+        garages_public:
+          type: integer
+          example: 0
+        storage_private:
+          type: integer
+          example: 1
+        storage_public:
+          type: integer
+          example: 0
+        condition:
+          $ref: '#/components/schemas/ConditionResponse'
+
+    AreaM2Response:
+      type: object
+      properties:
+        private_area:
+          type: number
+          format: double
+          example: 85.5
+        constructed_area:
+          type: number
+          format: double
+          example: 120.0
+        terrace_area:
+          type: number
+          format: double
+          example: 15.0
+
+    PropertyLayoutResponse:
+      type: object
+      properties:
+        bedrooms:
+          type: integer
+          example: 3
+        bathrooms:
+          type: integer
+          example: 2
+        floor:
+          type: integer
+          example: 5
+        elevator:
+          type: boolean
+          example: true
+
+    ConditionResponse:
+      type: object
+      properties:
+        build_age:
+          type: integer
+          example: 10
+        conservation_state:
+          type: string
+          example: "Bueno"
+
+    BuildingResponse:
+      type: object
+      properties:
+        complex_name:
+          type: string
+          example: "Torres del Parque"
+        tower:
+          type: string
+          example: "Torre A"
+        apartment:
+          type: string
+          example: "501"
+
+    FuaResponse:
+      type: object
+      properties:
+        reference:
+          type: string
+          example: "FUA-2024-001"
+        service_priority:
+          $ref: '#/components/schemas/ServicePriorityEnum'
+        inspection_date:
+          type: string
+          format: date
+          example: "2024-01-15"
+        requester:
+          $ref: '#/components/schemas/RequesterResponse'
+        property_identification:
+          $ref: '#/components/schemas/PropertyIdentificationResponse'
+        owners:
+          type: array
+          items:
+            $ref: '#/components/schemas/OwnerResponse'
+        physical_characteristics:
+          $ref: '#/components/schemas/PhysicalCharacteristicsResponse'
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhotoResponse'
+        building_context:
+          $ref: '#/components/schemas/BuildingContextResponse'
+        webhook_url:
+          type: string
+          format: uri
+        status:
+          $ref: '#/components/schemas/FuaStatusEnum'
+
+    RequesterResponse:
+      type: object
+      properties:
+        company_legal_name:
+          type: string
+        contact_name:
+          type: string
+        contact_email:
+          type: string
+          format: email
+        contact_phone:
+          type: string
+        service_priority:
+          $ref: '#/components/schemas/ServicePriorityEnum'
+
+    PropertyIdentificationResponse:
+      type: object
+      properties:
+        property_address:
+          $ref: '#/components/schemas/PropertyAddressResponse'
+        property_legal:
+          $ref: '#/components/schemas/PropertyLegalResponse'
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        stratum:
+          type: integer
+        property_type:
+          $ref: '#/components/schemas/PropertyTypeResponse'
+
+    PropertyAddressResponse:
+      type: object
+      properties:
+        address:
+          type: string
+        country_code:
+          type: string
+        state_code:
+          type: string
+        city_code:
+          type: string
+        state_name:
+          type: string
+        city_name:
+          type: string
+        neighborhood:
+          type: string
+
+    PropertyLegalResponse:
+      type: object
+      properties:
+        property_registration:
+          type: string
+        cadastral_chip:
+          type: string
+        property_coefficient:
+          type: number
+          format: double
+        certificate_of_tradition:
+          type: string
+        property_tax:
+          type: string
+        deed_acquisition:
+          type: string
+
+    PropertyTypeResponse:
+      type: object
+      properties:
+        general:
+          $ref: '#/components/schemas/PropertyGeneralTypeEnum'
+        subtype:
+          type: integer
+          format: int64
+        ph_regime:
+          type: boolean
+
+    OwnerResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        lastname:
+          type: string
+        id_type:
+          $ref: '#/components/schemas/IdTypeEnum'
+        identification:
+          type: integer
+        owner_identification:
+          type: string
+
+    PhysicalCharacteristicsResponse:
+      type: object
+      properties:
+        areas_m2:
+          $ref: '#/components/schemas/AreasM2Response'
+        layout:
+          $ref: '#/components/schemas/LayoutResponse'
+        construction:
+          $ref: '#/components/schemas/ConstructionResponse'
+
+    LayoutResponse:
+      type: object
+      properties:
+        bedrooms:
+          type: integer
+        bathrooms:
+          type: integer
+        study:
+          type: boolean
+        floor_number:
+          type: integer
+        elevator:
+          type: boolean
+
+    ConstructionResponse:
+      type: object
+      properties:
+        build_age:
+          type: integer
+        conservation_state:
+          $ref: '#/components/schemas/ConservationStateEnum'
+        finishes_level:
+          $ref: '#/components/schemas/FinishesLevelEnum'
+
+    PhotoResponse:
+      type: object
+      properties:
+        label:
+          type: string
+        url:
+          type: string
+          format: uri
+
+    BuildingContextResponse:
+      type: object
+      properties:
+        complex_name:
+          type: string
+        tower_or_block:
+          type: string
+        apartment_label:
+          type: string
+        common_amenities:
+          type: array
+          items:
+            type: integer
+            format: int64
+        services_utilities:
+          type: array
+          items:
+            type: integer
+            format: int64
+        building_description:
+          $ref: '#/components/schemas/BuildingDescriptionResponse'
+
+    BuildingDescriptionResponse:
+      type: object
+      properties:
+        total_tower_count:
+          type: integer
+        total_units_count:
+          type: integer
+        units_per_floor:
+          type: integer
+        total_building_floors:
+          type: integer
+        basement_count:
+          type: integer
+
+    WebhookPayload:
+      type: object
+      description: |
+        Payload sent to the webhook_url when the FUA is fully processed.
+        This payload is sent via POST to the URL specified in the webhook_url field of CreateFuaRequest.
+      properties:
+        status:
+          type: string
+          description: FUA status when the notification is sent
+          example: "completed"
+        data:
+          $ref: '#/components/schemas/FuaResponse'
+          description: Complete data of the processed FUA
+        fua_document:
+          type: string
+          format: uri
+          nullable: true
+          description: URL of the generated FUA document (if available)
+          example: "https://s3.amazonaws.com/bucket/fua-document.pdf"
+
+    PropertySubtypesReference:
+      type: object
+      description: |
+        Reference table for property subtypes. Use the `id` value in the `subtype` field of PropertyTypeRequest.
+        This table maps property subtype names to their corresponding IDs.
+      properties:
+        subtypes:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+                description: Property subtype ID to use in requests
+              name:
+                type: string
+                description: Property subtype name
+      example:
+        subtypes:
+          - id: 1
+            name: "Apartamento"
+          - id: 2
+            name: "Edificio"
+          - id: 3
+            name: "Bodega"
+          - id: 4
+            name: "Casa"
+          - id: 5
+            name: "Oficina"
+          - id: 6
+            name: "Casa Lote"
+          - id: 7
+            name: "Depósito"
+          - id: 8
+            name: "Lote"
+          - id: 9
+            name: "Cobertizo"
+          - id: 10
+            name: "Consultorio"
+          - id: 11
+            name: "Local"
+          - id: 12
+            name: "Kiosco"
+          - id: 13
+            name: "Parqueadero"
+          - id: 14
+            name: "Otro"
+
+    PhotoLabelsReference:
+      type: object
+      description: |
+        Reference table for photo labels. Use the `id` value in the `label_id` field of PhotoRequest.
+        This table maps photo label names to their corresponding IDs and indicates which labels are required.
+        Some labels allow multiple photos (allow_multiple: true), meaning you can send multiple PhotoRequest objects with the same label_id.
+      properties:
+        photo_labels:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+                description: Photo label ID to use in requests
+              name:
+                type: string
+                description: Photo label name
+              required:
+                type: boolean
+                description: Whether this photo label is required
+              allow_multiple:
+                type: boolean
+                description: Whether multiple photos with this label are allowed
+      example:
+        photo_labels:
+          - id: 1
+            name: "fachada_principal"
+            required: false
+            allow_multiple: false
+          - id: 2
+            name: "acceso_porteria"
+            required: false
+            allow_multiple: false
+          - id: 3
+            name: "placa_direccion"
+            required: false
+            allow_multiple: false
+          - id: 4
+            name: "sala"
+            required: false
+            allow_multiple: false
+          - id: 5
+            name: "comedor"
+            required: false
+            allow_multiple: false
+          - id: 6
+            name: "cocina"
+            required: false
+            allow_multiple: false
+          - id: 7
+            name: "alcoba_principal"
+            required: false
+            allow_multiple: false
+          - id: 8
+            name: "alcoba_secundaria"
+            required: false
+            allow_multiple: false
+          - id: 9
+            name: "bano_principal"
+            required: false
+            allow_multiple: false
+          - id: 10
+            name: "bano_social"
+            required: false
+            allow_multiple: false
+          - id: 11
+            name: "patio_terraza"
+            required: false
+            allow_multiple: false
+          - id: 12
+            name: "zonas_comunes"
+            required: false
+            allow_multiple: false
+          - id: 13
+            name: "parqueadero"
+            required: false
+            allow_multiple: false
+          - id: 14
+            name: "deposito"
+            required: false
+            allow_multiple: false
+          - id: 15
+            name: "via_de_acceso"
+            required: false
+            allow_multiple: false
+          - id: 16
+            name: "entorno_urbano"
+            required: false
+            allow_multiple: false
+          - id: 17
+            name: "instalaciones_mecanicas_medidores"
+            required: false
+            allow_multiple: false
+          - id: 18
+            name: "afectaciones_danos_humedades"
+            required: false
+            allow_multiple: false
+          - id: 19
+            name: "otros"
+            required: false
+            allow_multiple: true
+
+    CommonAmenitiesReference:
+      type: object
+      description: |
+        Reference table for common amenities. Use the `id` values in the `common_amenities` array field of BuildingContextRequest.
+        This table maps common amenity names to their corresponding IDs.
+      properties:
+        common_amenities:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+                description: Common amenity ID to use in requests
+              name:
+                type: string
+                description: Common amenity name
+      example:
+        common_amenities:
+          - id: 1
+            name: "recepcion"
+          - id: 2
+            name: "oficina administracion"
+          - id: 3
+            name: "salon comunal"
+          - id: 4
+            name: "ascensor"
+          - id: 5
+            name: "zonas verdes"
+          - id: 6
+            name: "citofono"
+          - id: 7
+            name: "escalera de emergencia"
+          - id: 8
+            name: "gimnasio"
+          - id: 9
+            name: "cancha multiple"
+          - id: 10
+            name: "sala de juegos"
+          - id: 11
+            name: "sala de internet"
+          - id: 12
+            name: "parque infantil"
+          - id: 13
+            name: "tanque de agua"
+          - id: 14
+            name: "auditorio"
+          - id: 15
+            name: "sala de juntas"
+          - id: 16
+            name: "piscina"
+          - id: 17
+            name: "club house"
+          - id: 18
+            name: "bbq"
+          - id: 19
+            name: "bicicletero"
+          - id: 20
+            name: "terraza comunal"
+          - id: 21
+            name: "lavanderia comunal"
+          - id: 22
+            name: "c. c de television"
+          - id: 23
+            name: "cableado estructurado"
+          - id: 24
+            name: "cancha de squash"
+          - id: 25
+            name: "equipo presion constante"
+          - id: 26
+            name: "parqueadero visitantes"
+          - id: 27
+            name: "shut basuras"
+          - id: 28
+            name: "planta electrica de emergencia"
+          - id: 29
+            name: "subestacion electrica"
+          - id: 30
+            name: "cuarto de bombas"
+          - id: 31
+            name: "no tiene"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+        status:
+          type: integer
+
+    ServicePriorityEnum:
+      type: string
+      enum:
+        - alta
+        - media
+        - baja
+      example: "alta"
+
+    IdTypeEnum:
+      type: string
+      enum:
+        - cc
+        - ce
+        - nit
+        - pasaporte
+      example: "cc"
+
+    PropertyGeneralTypeEnum:
+      type: string
+      enum:
+        - urbano
+        - rural
+      example: "urbano"
+
+    FuaStatusEnum:
+      type: string
+      enum:
+        - processing
+        - completed
+        - cancelled
+        - failed_send
+      example: "processing"
+
+    ConservationStateEnum:
+      type: string
+      enum:
+        - nuevo
+        - bueno
+        - regular
+        - malo
+        - remodelado
+      example: "bueno"
+
+    FinishesLevelEnum:
+      type: string
+      enum:
+        - basico
+        - obra_gris
+        - terminado
+      example: "obra_gris"
+
+    PropertyUnitTypeEnum:
+      type: string
+      enum:
+        - garage
+        - storage
+      example: "garage"
+
+    LandUseContextEnum:
+      type: string
+      enum:
+        - residencial
+        - comercial
+        - mixto
+        - industrial
+        - otro
+      example: "residencial"

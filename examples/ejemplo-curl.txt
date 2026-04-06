@@ -1,0 +1,173 @@
+curl --location 'https://services.avaluoenlinea.com/fua-service/' \
+--header 'x-api-key;' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "reference": "FUA-2025-014",
+  "service_priority": "alta",
+  "inspection_date": "2025-01-13",
+  "requester": {
+    "company_legal_name": "Inmobiliaria ABC S.A.S",
+    "contact_name": "Juan Pérez",
+    "contact_email": "juan.perez@inmobiliaria.com",
+    "contact_phone": "+573001234567"
+  },
+  "property_identification": {
+    "property_address": {
+      "address": "Calle 123 #45-67",
+      "country_code": "CO",
+      "state_code": "11",
+      "city_code": "11001",
+      "neighborhood": "Chapinero"
+    },
+    "property_legal": {
+      "property_registration": "123456789",
+      "cadastral_chip": "987654321",
+      "property_coefficient": 1.5,
+      "certificate_of_tradition": "https://tinmob-images.s3.us-east-1.amazonaws.com/TES-07/docs/TES-07.pdf",
+      "property_tax": "https://tinmob-images.s3.us-east-1.amazonaws.com/TES-07/docs/TES-07.pdf",
+      "deed_acquisition": "https://tinmob-images.s3.us-east-1.amazonaws.com/TES-07/docs/TES-07.pdf"
+    },
+    "latitude": 4.6097,
+    "longitude": -74.0817,
+    "stratum": 1,
+    "property_type": {
+      "general": "urbano",
+      "subtype": 1,
+      "ph_regime": false
+    }
+  },
+  "owners": [
+    {
+      "name": "María",
+      "lastname": "González",
+      "id_type": "cc",
+      "identification": 1234567890,
+      "owner_identification": "https://tinmob-images.s3.us-east-1.amazonaws.com/TES-07/docs/TES-07.pdf"
+    },
+    {
+      "name": "Habi",
+      "lastname": "Renta 4",
+      "id_type": "nit",
+      "identification": 901068287,
+      "owner_identification": null
+    }
+  ],
+  "physical_characteristics": {
+    "areas_m2": {
+      "private_area": 85.5,
+      "constructed_area": 80.0,
+      "terrace_area": 5.5
+    },
+    "layout": {
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "study": true,
+      "floor_number": 5,
+      "elevator": true
+    },
+    "construction": {
+      "build_age": 8,
+      "conservation_state": "bueno",
+      "finishes_level": "terminado"
+    },
+    "property_units": [
+      {
+        "type": "garage",
+        "public": false,
+        "property_legal": {
+          "property_registration": "GAR-001",
+          "property_coefficient": 1.2,
+          "certificate_of_tradition": "https://tinmob-images.s3.us-east-1.amazonaws.com/TES-07/docs/TES-07.pdf",
+          "property_tax": "https://tinmob-images.s3.us-east-1.amazonaws.com/TES-07/docs/TES-07.pdf"
+        },
+        "unit_id": "G-101",
+        "area": 12.5
+      },
+      {
+        "type": "storage",
+        "public": false,
+        "property_legal": {
+          "property_registration": "DEP-001",
+          "property_coefficient": 1.0,
+          "certificate_of_tradition": "https://tinmob-images.s3.us-east-1.amazonaws.com/TES-07/docs/TES-07.pdf",
+          "property_tax": "https://tinmob-images.s3.us-east-1.amazonaws.com/TES-07/docs/TES-07.pdf"
+        },
+        "unit_id": "D-201",
+        "area": 8.0
+      },
+      {
+        "type": "storage",
+        "public": true,
+        "property_legal": null,
+        "unit_id": "D-202",
+        "area": 6.5
+      }
+    ]
+  },
+  "photos": [
+    {
+      "label_id": 1,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/4_signature.jpeg"
+    },
+    {
+      "label_id": 2,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/4_signature.jpeg"
+    },
+    {
+      "label_id": 3,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/cat-1.jpeg"
+    },
+    {
+      "label_id": 4,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/4_signature.jpeg"
+    },
+    {
+      "label_id": 5,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/4_signature.jpeg"
+    },
+    {
+      "label_id": 6,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/4_signature.jpeg"
+    },
+    {
+      "label_id": 7,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/4_signature.jpeg"
+    },
+    {
+      "label_id": 9,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/4_signature.jpeg"
+    },
+    {
+      "label_id": 11,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/4_signature.jpeg"
+    },
+    {
+      "label_id": 12,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/4_signature.jpeg"
+    },
+    {
+      "label_id": 15,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/4_signature.jpeg"
+    },
+    {
+      "label_id": 16,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/4_signature.jpeg"
+    }
+  ],
+  "building_context": {
+    "complex_name": "Torres del Norte",
+    "tower_or_block": "Torre A",
+    "apartment_label": "501",
+    "common_amenities": [3, 5, 17, 25, 35],
+    "services_utilities": [1, 2, 3],
+    "building_description": {
+      "total_tower_count": 3,
+      "total_units_count": 120,
+      "units_per_floor": 8,
+      "total_building_floors": 15,
+      "basement_count": 2
+    }
+  },
+  "webhook_url": "https://example.com/webhooks/fua-callback"
+}
+'
