@@ -476,6 +476,22 @@ components:
           example: [1, 2]
         building_description:
           $ref: '#/components/schemas/BuildingDescriptionRequest'
+        access_roads_condition:
+          $ref: '#/components/schemas/AccessRoadsConditionEnum'
+          nullable: true
+          description: Condition of access roads to the property/complex
+        neighbors_built:
+          type: boolean
+          nullable: true
+          description: Whether neighboring properties are built/constructed. Derived from surrounding_constructions — true if any constructions exist.
+          example: true
+        surrounding_constructions:
+          type: array
+          nullable: true
+          description: Types of constructions surrounding the property. See SurroundingConstructionsReference.
+          items:
+            $ref: '#/components/schemas/SurroundingConstructionEnum'
+          example: ["conjunto_edificios", "locales_comerciales"]
 
     BuildingDescriptionRequest:
       type: object
@@ -496,6 +512,10 @@ components:
         total_building_floors:
           type: integer
           example: 10
+        total_garages:
+          type: integer
+          description: "Total garages in the complex (private + visitor)"
+          example: 200
         basement_count:
           type: integer
           example: 2
@@ -806,6 +826,8 @@ components:
           type: integer
         total_building_floors:
           type: integer
+        total_garages:
+          type: integer
         basement_count:
           type: integer
 
@@ -906,7 +928,8 @@ components:
       example:
         photo_labels:
           - id: 1
-            name: "fachada_principal"
+            name: "fachada_exterior"
+            description: "Vista exterior del conjunto, edificio o casa desde la calle"
             required: false
             allow_multiple: false
           - id: 2
@@ -981,6 +1004,36 @@ components:
             name: "otros"
             required: false
             allow_multiple: true
+          - id: 20
+            name: "fachada_edificio"
+            required: false
+            allow_multiple: false
+            description: "Fachada de la torre, bloque o edificio específico dentro de un conjunto"
+          - id: 21
+            name: "fachada_inmueble"
+            required: false
+            allow_multiple: false
+            description: "Entrada de la unidad: puerta del apartamento, frente de la casa, acceso del local u oficina"
+          - id: 22
+            name: "interior_general"
+            required: false
+            allow_multiple: true
+            description: "Fotos generales del interior del inmueble sin clasificación específica (múltiples por propiedad)"
+          - id: 23
+            name: "contador_gas"
+            required: true
+            allow_multiple: false
+            description: "Foto del contador de gas o recibo de gas del inmueble"
+          - id: 24
+            name: "contador_luz"
+            required: true
+            allow_multiple: false
+            description: "Foto del contador de luz o recibo de energía del inmueble"
+          - id: 25
+            name: "contador_agua"
+            required: true
+            allow_multiple: false
+            description: "Foto del contador de agua o recibo de acueducto del inmueble"
 
     CommonAmenitiesReference:
       type: object
@@ -1133,6 +1186,26 @@ components:
         - storage
       example: "garage"
 
+    AccessRoadsConditionEnum:
+      type: string
+      description: Condition of access roads to the property/complex
+      enum:
+        - bueno
+        - regular
+        - malo
+      example: "bueno"
+
+    SurroundingConstructionEnum:
+      type: string
+      description: Type of constructions surrounding the property
+      enum:
+        - conjunto_casas
+        - conjunto_edificios
+        - casas_independientes
+        - locales_comerciales
+        - lotes_baldios
+      example: "conjunto_edificios"
+
     LandUseContextEnum:
       type: string
       enum:
@@ -1142,3 +1215,21 @@ components:
         - industrial
         - otro
       example: "residencial"
+
+    SurroundingConstructionsReference:
+      type: object
+      description: |
+        Reference table for surrounding construction types.
+        Use the enum values in the `surrounding_constructions` array field of BuildingContextRequest.
+      example:
+        constructions:
+          - value: "conjunto_casas"
+            description: "Conjunto de casas"
+          - value: "conjunto_edificios"
+            description: "Conjunto de edificios"
+          - value: "casas_independientes"
+            description: "Casas independientes"
+          - value: "locales_comerciales"
+            description: "Locales comerciales"
+          - value: "lotes_baldios"
+            description: "Lotes baldíos"
