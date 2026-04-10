@@ -203,6 +203,7 @@ components:
       type: object
       required:
         - property_address
+        - property_legal
         - latitude
         - longitude
         - property_type
@@ -263,11 +264,12 @@ components:
     PropertyLegalRequest:
       type: object
       required:
-        - property_registration
         - certificate_of_tradition
       properties:
         property_registration:
           type: string
+          nullable: true
+          description: Matrícula inmobiliaria (opcional si no aplica o aún no disponible).
           example: "50C-123456"
         cadastral_chip:
           type: string
@@ -529,7 +531,7 @@ components:
           example: 2
         total_garages:
           type: integer
-          description: "Total garages in the complex (private + public)"
+          description: "Total garages in the complex (private + visitor)"
           example: 200
         total_storages:
           type: integer
@@ -729,6 +731,7 @@ components:
       properties:
         property_registration:
           type: string
+          nullable: true
         cadastral_chip:
           type: string
         property_coefficient:
