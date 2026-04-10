@@ -13,11 +13,12 @@ info:
     Contact the API administrator to obtain your API key.
     
     **Reference Tables:**
-    This API uses reference tables for property subtypes, photo labels, and common amenities. 
+    This API uses reference tables for property subtypes, photo labels, common amenities, and surrounding constructions. 
     See the following schemas in the Components section for ID mappings:
     - PropertySubtypesReference: Maps property subtype names to IDs (used in PropertyTypeRequest.subtype)
     - PhotoLabelsReference: Maps photo label names to IDs (used in PhotoRequest.label_id)
     - CommonAmenitiesReference: Maps common amenity names to IDs (used in BuildingContextRequest.common_amenities)
+    - SurroundingConstructionsReference: Maps surrounding construction names to IDs (used in BuildingContextRequest.surrounding_constructions)
   version: 1.0.0
   contact:
     name: avaluoenlinea
@@ -390,14 +391,14 @@ components:
     ConstructionRequest:
       type: object
       required:
-        - build_age
+        - build_year
         - conservation_state
         - finishes_level
       properties:
-        build_age:
+        build_year:
           type: integer
-          description: Building age in years
-          example: 10
+          description: Year the property was built
+          example: 2015
         conservation_state:
           $ref: '#/components/schemas/ConservationStateEnum'
         finishes_level:
@@ -425,6 +426,14 @@ components:
           type: number
           format: double
           example: 25.0
+        photos:
+          type: array
+          nullable: true
+          description: |
+            Photos of this property unit (garage, storage, etc.; see PhotoLabelsReference ids 26–27).
+            Required when `public` is `false` (private unit). Optional when `public` is `true` (shared/public unit).
+          items:
+            $ref: '#/components/schemas/PhotoRequest'
 
     PhotoRequest:
       type: object
@@ -488,10 +497,11 @@ components:
         surrounding_constructions:
           type: array
           nullable: true
-          description: Types of constructions surrounding the property. See SurroundingConstructionsReference.
+          description: IDs of surrounding construction types. See SurroundingConstructionsReference.
           items:
-            $ref: '#/components/schemas/SurroundingConstructionEnum'
-          example: ["conjunto_edificios", "locales_comerciales"]
+            type: integer
+            format: int64
+          example: [2, 4]
 
     BuildingDescriptionRequest:
       type: object
@@ -499,6 +509,8 @@ components:
         - total_tower_count
         - total_units_count
         - total_building_floors
+        - total_garages
+        - total_storages
       properties:
         total_tower_count:
           type: integer
@@ -512,13 +524,17 @@ components:
         total_building_floors:
           type: integer
           example: 10
-        total_garages:
-          type: integer
-          description: "Total garages in the complex (private + visitor)"
-          example: 200
         basement_count:
           type: integer
           example: 2
+        total_garages:
+          type: integer
+          description: "Total garages in the complex (private + public)"
+          example: 200
+        total_storages:
+          type: integer
+          description: "Total storage units in the complex (private + public)"
+          example: 80
 
     CreateFuaResponse:
       type: object
@@ -777,7 +793,7 @@ components:
     ConstructionResponse:
       type: object
       properties:
-        build_age:
+        build_year:
           type: integer
         conservation_state:
           $ref: '#/components/schemas/ConservationStateEnum'
@@ -812,6 +828,19 @@ components:
           items:
             type: integer
             format: int64
+        access_roads_condition:
+          $ref: '#/components/schemas/AccessRoadsConditionEnum'
+          nullable: true
+        neighbors_built:
+          type: boolean
+          nullable: true
+        surrounding_constructions:
+          type: array
+          nullable: true
+          description: IDs of surrounding construction types. See SurroundingConstructionsReference.
+          items:
+            type: integer
+            format: int64
         building_description:
           $ref: '#/components/schemas/BuildingDescriptionResponse'
 
@@ -827,6 +856,8 @@ components:
         total_building_floors:
           type: integer
         total_garages:
+          type: integer
+        total_storages:
           type: integer
         basement_count:
           type: integer
@@ -906,6 +937,7 @@ components:
         Reference table for photo labels. Use the `id` value in the `label_id` field of PhotoRequest.
         This table maps photo label names to their corresponding IDs and indicates which labels are required.
         Some labels allow multiple photos (allow_multiple: true), meaning you can send multiple PhotoRequest objects with the same label_id.
+        Labels `garage` (26) and `storage` (27) are intended for photos attached to property units (`PropertyUnitRequest.photos`).
       properties:
         photo_labels:
           type: array
@@ -1034,6 +1066,16 @@ components:
             required: true
             allow_multiple: false
             description: "Foto del contador de agua o recibo de acueducto del inmueble"
+          - id: 26
+            name: "garage"
+            required: false
+            allow_multiple: false
+            description: "Foto del garaje asociado a una unidad en property_units"
+          - id: 27
+            name: "storage"
+            required: false
+            allow_multiple: false
+            description: "Foto del depósito asociado a una unidad en property_units"
 
     CommonAmenitiesReference:
       type: object
@@ -1195,17 +1237,6 @@ components:
         - malo
       example: "bueno"
 
-    SurroundingConstructionEnum:
-      type: string
-      description: Type of constructions surrounding the property
-      enum:
-        - conjunto_casas
-        - conjunto_edificios
-        - casas_independientes
-        - locales_comerciales
-        - lotes_baldios
-      example: "conjunto_edificios"
-
     LandUseContextEnum:
       type: string
       enum:
@@ -1220,16 +1251,43 @@ components:
       type: object
       description: |
         Reference table for surrounding construction types.
-        Use the enum values in the `surrounding_constructions` array field of BuildingContextRequest.
+        Use the `id` values in the `surrounding_constructions` array field of BuildingContextRequest and BuildingContextResponse.
+      properties:
+        surrounding_constructions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+                description: Surrounding construction ID to use in requests
+              name:
+                type: string
+                description: Surrounding construction name
       example:
-        constructions:
-          - value: "conjunto_casas"
-            description: "Conjunto de casas"
-          - value: "conjunto_edificios"
-            description: "Conjunto de edificios"
-          - value: "casas_independientes"
-            description: "Casas independientes"
-          - value: "locales_comerciales"
-            description: "Locales comerciales"
-          - value: "lotes_baldios"
-            description: "Lotes baldíos"
+        surrounding_constructions:
+          - id: 1
+            name: "conjunto casas"
+          - id: 2
+            name: "conjunto edificios"
+          - id: 3
+            name: "casas independientes"
+          - id: 4
+            name: "locales comerciales"
+          - id: 5
+            name: "lotes baldios"
+          - id: 6
+            name: "hospitales"
+          - id: 7
+            name: "supermercados"
+          - id: 8
+            name: "colegios"
+          - id: 9
+            name: "parques"
+          - id: 10
+            name: "iglesias"
+          - id: 11
+            name: "restaurantes"
+          - id: 12
+            name: "zonas industriales"

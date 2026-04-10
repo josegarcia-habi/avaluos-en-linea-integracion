@@ -17,6 +17,8 @@ curl --location 'https://services.avaluoenlinea.com/fua-service/' \
       "country_code": "CO",
       "state_code": "11",
       "city_code": "11001",
+      "state_name": "Cundinamarca",
+      "city_name": "Bogotá D.C.",
       "neighborhood": "Chapinero"
     },
     "property_legal": {
@@ -66,7 +68,7 @@ curl --location 'https://services.avaluoenlinea.com/fua-service/' \
       "elevator": true
     },
     "construction": {
-      "build_age": 8,
+      "build_year": 2017,
       "conservation_state": "bueno",
       "finishes_level": "terminado"
     },
@@ -81,7 +83,13 @@ curl --location 'https://services.avaluoenlinea.com/fua-service/' \
           "property_tax": "https://tinmob-images.s3.us-east-1.amazonaws.com/TES-07/docs/TES-07.pdf"
         },
         "unit_id": "G-101",
-        "area": 12.5
+        "area": 12.5,
+        "photos": [
+          {
+            "label_id": 26,
+            "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/garage-G-101.jpeg"
+          }
+        ]
       },
       {
         "type": "storage",
@@ -93,7 +101,13 @@ curl --location 'https://services.avaluoenlinea.com/fua-service/' \
           "property_tax": "https://tinmob-images.s3.us-east-1.amazonaws.com/TES-07/docs/TES-07.pdf"
         },
         "unit_id": "D-201",
-        "area": 8.0
+        "area": 8.0,
+        "photos": [
+          {
+            "label_id": 27,
+            "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/storage-D-201.jpeg"
+          }
+        ]
       },
       {
         "type": "storage",
@@ -152,6 +166,18 @@ curl --location 'https://services.avaluoenlinea.com/fua-service/' \
     {
       "label_id": 16,
       "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/4_signature.jpeg"
+    },
+    {
+      "label_id": 23,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/contador-gas.jpeg"
+    },
+    {
+      "label_id": 24,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/contador-luz.jpeg"
+    },
+    {
+      "label_id": 25,
+      "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/inspectors-signatures/contador-agua.jpeg"
     }
   ],
   "building_context": {
@@ -160,12 +186,17 @@ curl --location 'https://services.avaluoenlinea.com/fua-service/' \
     "apartment_label": "501",
     "common_amenities": [3, 5, 17, 25, 35],
     "services_utilities": [1, 2, 3],
+    "access_roads_condition": "bueno",
+    "neighbors_built": true,
+    "surrounding_constructions": [2, 4],
     "building_description": {
       "total_tower_count": 3,
       "total_units_count": 120,
       "units_per_floor": 8,
       "total_building_floors": 15,
-      "basement_count": 2
+      "basement_count": 2,
+      "total_garages": 180,
+      "total_storages": 90
     }
   },
   "webhook_url": "https://example.com/webhooks/fua-callback"
