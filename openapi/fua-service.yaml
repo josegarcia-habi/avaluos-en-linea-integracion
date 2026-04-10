@@ -512,7 +512,6 @@ components:
         - total_units_count
         - total_building_floors
         - total_garages
-        - total_storages
       properties:
         total_tower_count:
           type: integer
