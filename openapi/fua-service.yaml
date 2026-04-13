@@ -322,10 +322,21 @@ components:
           $ref: '#/components/schemas/IdTypeEnum'
         identification:
           type: integer
+          format: int64
+          description: |
+            Número de identificación del propietario (CC o NIT).
+            IMPORTANTE: NITs colombianos pueden superar 2^31 (ej. 9010682878).
+            El servidor debe usar int64/long, no int32.
           example: 1234567890
         owner_identification:
           type: string
-          example: "OWNER-123"
+          format: uri
+          nullable: true
+          description: |
+            URL del documento de identidad escaneado del propietario (cédula, RUT, cámara de comercio).
+            Opcional: no todos los integradores tienen este documento digitalizado.
+            Si se envía, el servidor descarga el archivo desde esta URL.
+          example: "https://storage.example.com/owners/cedula_1234567890.pdf"
 
     PhysicalCharacteristicsRequest:
       type: object
