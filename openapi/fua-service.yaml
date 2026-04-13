@@ -534,7 +534,9 @@ components:
           example: 200
         total_storages:
           type: integer
-          description: "Total storage units in the complex (private + public)"
+          nullable: true
+          description: |
+            Opcional. Total de depósitos del conjunto (privados + públicos). Si no se envía, el servidor guarda 0.
           example: 80
 
     CreateFuaResponse:
@@ -620,12 +622,13 @@ components:
     ConditionResponse:
       type: object
       properties:
-        build_age:
+        build_year:
           type: integer
-          example: 10
+          description: Año de construcción del inmueble (no antigüedad).
+          example: 2015
         conservation_state:
           type: string
-          example: "Bueno"
+          example: "bueno"
 
     BuildingResponse:
       type: object
@@ -646,6 +649,12 @@ components:
         reference:
           type: string
           example: "FUA-2024-001"
+        origin:
+          type: string
+          maxLength: 50
+          description: |
+            Identificador de cliente o canal asociado a la API key usada al crear el FUA (p. ej. código del integrador).
+          example: "habi"
         service_priority:
           $ref: '#/components/schemas/ServicePriorityEnum'
         inspection_date:
@@ -772,7 +781,7 @@ components:
       type: object
       properties:
         areas_m2:
-          $ref: '#/components/schemas/AreasM2Response'
+          $ref: '#/components/schemas/AreaM2Response'
         layout:
           $ref: '#/components/schemas/LayoutResponse'
         construction:
