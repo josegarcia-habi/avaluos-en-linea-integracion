@@ -324,11 +324,29 @@ components:
         id_type:
           $ref: '#/components/schemas/IdTypeEnum'
         identification:
-          type: integer
-          example: 1234567890
+          type: string
+          pattern: '^\d+$'
+          description: |
+            Número de identificación del propietario (CC o NIT), solo dígitos como texto.
+            Evita límites de enteros en JSON y admite NITs largos sin pérdida de precisión.
+          example: "1234567890"
+        check_digit:
+          type: string
+          pattern: '^[0-9]$'
+          nullable: true
+          description: |
+            Dígito de verificación (p. ej. NIT). Un solo carácter 0-9.
+            Opcional; omitir o enviar null si no aplica.
+          example: "8"
         owner_identification:
           type: string
-          example: "OWNER-123"
+          format: uri
+          nullable: true
+          description: |
+            URI HTTPS del documento de identidad escaneado del propietario (cédula, RUT, cámara de comercio).
+            Opcional: no todos los integradores tienen este documento digitalizado.
+            Si se envía, el servidor descarga el archivo desde esta URI.
+          example: "https://storage.example.com/owners/cedula_1234567890.pdf"
 
     PhysicalCharacteristicsRequest:
       type: object
@@ -773,9 +791,20 @@ components:
         id_type:
           $ref: '#/components/schemas/IdTypeEnum'
         identification:
-          type: integer
+          type: string
+          pattern: '^\d+$'
+          description: Número de identificación solo dígitos.
+        check_digit:
+          type: string
+          pattern: '^[0-9]$'
+          nullable: true
+          description: Dígito de verificación cuando aplica (p. ej. NIT).
         owner_identification:
           type: string
+          format: uri
+          nullable: true
+          description: |
+            URI del documento de identidad; si está presente, el servidor puede haberla usado para descargar el archivo.
 
     PhysicalCharacteristicsResponse:
       type: object

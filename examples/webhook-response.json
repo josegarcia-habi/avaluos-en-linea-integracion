@@ -45,15 +45,9 @@
                 "name": "María",
                 "lastname": "González",
                 "id_type": "cc",
-                "identification": 1234567890,
-                "owner_identification": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2/docs/cedula_propietario.pdf"
-            },
-            {
-                "name": "Habi",
-                "lastname": "Renta 4",
-                "id_type": "nit",
-                "identification": 901068287,
-                "owner_identification": null
+                "identification": "1234567890",
+                "check_digit": null,
+                "owner_identification": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fowners%2Fcedula_TEST-2.pdf"
             }
         ],
         "physical_characteristics": {
