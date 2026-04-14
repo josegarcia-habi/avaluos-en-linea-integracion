@@ -13,11 +13,12 @@ info:
     Contact the API administrator to obtain your API key.
     
     **Reference Tables:**
-    This API uses reference tables for property subtypes, photo labels, and common amenities. 
+    This API uses reference tables for property subtypes, photo labels, common amenities, and surrounding constructions. 
     See the following schemas in the Components section for ID mappings:
     - PropertySubtypesReference: Maps property subtype names to IDs (used in PropertyTypeRequest.subtype)
     - PhotoLabelsReference: Maps photo label names to IDs (used in PhotoRequest.label_id)
     - CommonAmenitiesReference: Maps common amenity names to IDs (used in BuildingContextRequest.common_amenities)
+    - SurroundingConstructionsReference: Maps surrounding construction names to IDs (used in BuildingContextRequest.surrounding_constructions)
   version: 1.0.0
   contact:
     name: avaluoenlinea
@@ -202,6 +203,7 @@ components:
       type: object
       required:
         - property_address
+        - property_legal
         - latitude
         - longitude
         - property_type
@@ -262,11 +264,12 @@ components:
     PropertyLegalRequest:
       type: object
       required:
-        - property_registration
         - certificate_of_tradition
       properties:
         property_registration:
           type: string
+          nullable: true
+          description: Matrícula inmobiliaria (opcional si no aplica o aún no disponible).
           example: "50C-123456"
         cadastral_chip:
           type: string
@@ -408,14 +411,14 @@ components:
     ConstructionRequest:
       type: object
       required:
-        - build_age
+        - build_year
         - conservation_state
         - finishes_level
       properties:
-        build_age:
+        build_year:
           type: integer
-          description: Building age in years
-          example: 10
+          description: Year the property was built
+          example: 2015
         conservation_state:
           $ref: '#/components/schemas/ConservationStateEnum'
         finishes_level:
@@ -443,6 +446,14 @@ components:
           type: number
           format: double
           example: 25.0
+        photos:
+          type: array
+          nullable: true
+          description: |
+            Photos of this property unit (garage, storage, etc.; see PhotoLabelsReference ids 26–27).
+            Required when `public` is `false` (private unit). Optional when `public` is `true` (shared/public unit).
+          items:
+            $ref: '#/components/schemas/PhotoRequest'
 
     PhotoRequest:
       type: object
@@ -494,6 +505,23 @@ components:
           example: [1, 2]
         building_description:
           $ref: '#/components/schemas/BuildingDescriptionRequest'
+        access_roads_condition:
+          $ref: '#/components/schemas/AccessRoadsConditionEnum'
+          nullable: true
+          description: Condition of access roads to the property/complex
+        neighbors_built:
+          type: boolean
+          nullable: true
+          description: Whether neighboring properties are built/constructed. Derived from surrounding_constructions — true if any constructions exist.
+          example: true
+        surrounding_constructions:
+          type: array
+          nullable: true
+          description: IDs of surrounding construction types. See SurroundingConstructionsReference.
+          items:
+            type: integer
+            format: int64
+          example: [2, 4]
 
     BuildingDescriptionRequest:
       type: object
@@ -501,6 +529,7 @@ components:
         - total_tower_count
         - total_units_count
         - total_building_floors
+        - total_garages
       properties:
         total_tower_count:
           type: integer
@@ -517,6 +546,16 @@ components:
         basement_count:
           type: integer
           example: 2
+        total_garages:
+          type: integer
+          description: "Total garages in the complex (private + visitor)"
+          example: 200
+        total_storages:
+          type: integer
+          nullable: true
+          description: |
+            Opcional. Total de depósitos del conjunto (privados + públicos). Si no se envía, el servidor guarda 0.
+          example: 80
 
     CreateFuaResponse:
       type: object
@@ -601,12 +640,13 @@ components:
     ConditionResponse:
       type: object
       properties:
-        build_age:
+        build_year:
           type: integer
-          example: 10
+          description: Año de construcción del inmueble (no antigüedad).
+          example: 2015
         conservation_state:
           type: string
-          example: "Bueno"
+          example: "bueno"
 
     BuildingResponse:
       type: object
@@ -627,6 +667,12 @@ components:
         reference:
           type: string
           example: "FUA-2024-001"
+        origin:
+          type: string
+          maxLength: 50
+          description: |
+            Identificador de cliente o canal asociado a la API key usada al crear el FUA (p. ej. código del integrador).
+          example: "habi"
         service_priority:
           $ref: '#/components/schemas/ServicePriorityEnum'
         inspection_date:
@@ -711,6 +757,7 @@ components:
       properties:
         property_registration:
           type: string
+          nullable: true
         cadastral_chip:
           type: string
         property_coefficient:
@@ -763,7 +810,7 @@ components:
       type: object
       properties:
         areas_m2:
-          $ref: '#/components/schemas/AreasM2Response'
+          $ref: '#/components/schemas/AreaM2Response'
         layout:
           $ref: '#/components/schemas/LayoutResponse'
         construction:
@@ -786,7 +833,7 @@ components:
     ConstructionResponse:
       type: object
       properties:
-        build_age:
+        build_year:
           type: integer
         conservation_state:
           $ref: '#/components/schemas/ConservationStateEnum'
@@ -821,6 +868,19 @@ components:
           items:
             type: integer
             format: int64
+        access_roads_condition:
+          $ref: '#/components/schemas/AccessRoadsConditionEnum'
+          nullable: true
+        neighbors_built:
+          type: boolean
+          nullable: true
+        surrounding_constructions:
+          type: array
+          nullable: true
+          description: IDs of surrounding construction types. See SurroundingConstructionsReference.
+          items:
+            type: integer
+            format: int64
         building_description:
           $ref: '#/components/schemas/BuildingDescriptionResponse'
 
@@ -834,6 +894,10 @@ components:
         units_per_floor:
           type: integer
         total_building_floors:
+          type: integer
+        total_garages:
+          type: integer
+        total_storages:
           type: integer
         basement_count:
           type: integer
@@ -913,6 +977,7 @@ components:
         Reference table for photo labels. Use the `id` value in the `label_id` field of PhotoRequest.
         This table maps photo label names to their corresponding IDs and indicates which labels are required.
         Some labels allow multiple photos (allow_multiple: true), meaning you can send multiple PhotoRequest objects with the same label_id.
+        Labels `garage` (26) and `storage` (27) are intended for photos attached to property units (`PropertyUnitRequest.photos`).
       properties:
         photo_labels:
           type: array
@@ -935,7 +1000,8 @@ components:
       example:
         photo_labels:
           - id: 1
-            name: "fachada_principal"
+            name: "fachada_exterior"
+            description: "Vista exterior del conjunto, edificio o casa desde la calle"
             required: false
             allow_multiple: false
           - id: 2
@@ -1010,6 +1076,46 @@ components:
             name: "otros"
             required: false
             allow_multiple: true
+          - id: 20
+            name: "fachada_edificio"
+            required: false
+            allow_multiple: false
+            description: "Fachada de la torre, bloque o edificio específico dentro de un conjunto"
+          - id: 21
+            name: "fachada_inmueble"
+            required: false
+            allow_multiple: false
+            description: "Entrada de la unidad: puerta del apartamento, frente de la casa, acceso del local u oficina"
+          - id: 22
+            name: "interior_general"
+            required: false
+            allow_multiple: true
+            description: "Fotos generales del interior del inmueble sin clasificación específica (múltiples por propiedad)"
+          - id: 23
+            name: "contador_gas"
+            required: true
+            allow_multiple: false
+            description: "Foto del contador de gas o recibo de gas del inmueble"
+          - id: 24
+            name: "contador_luz"
+            required: true
+            allow_multiple: false
+            description: "Foto del contador de luz o recibo de energía del inmueble"
+          - id: 25
+            name: "contador_agua"
+            required: true
+            allow_multiple: false
+            description: "Foto del contador de agua o recibo de acueducto del inmueble"
+          - id: 26
+            name: "garage"
+            required: false
+            allow_multiple: false
+            description: "Foto del garaje asociado a una unidad en property_units"
+          - id: 27
+            name: "storage"
+            required: false
+            allow_multiple: false
+            description: "Foto del depósito asociado a una unidad en property_units"
 
     CommonAmenitiesReference:
       type: object
@@ -1162,6 +1268,15 @@ components:
         - storage
       example: "garage"
 
+    AccessRoadsConditionEnum:
+      type: string
+      description: Condition of access roads to the property/complex
+      enum:
+        - bueno
+        - regular
+        - malo
+      example: "bueno"
+
     LandUseContextEnum:
       type: string
       enum:
@@ -1171,3 +1286,48 @@ components:
         - industrial
         - otro
       example: "residencial"
+
+    SurroundingConstructionsReference:
+      type: object
+      description: |
+        Reference table for surrounding construction types.
+        Use the `id` values in the `surrounding_constructions` array field of BuildingContextRequest and BuildingContextResponse.
+      properties:
+        surrounding_constructions:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+                description: Surrounding construction ID to use in requests
+              name:
+                type: string
+                description: Surrounding construction name
+      example:
+        surrounding_constructions:
+          - id: 1
+            name: "conjunto casas"
+          - id: 2
+            name: "conjunto edificios"
+          - id: 3
+            name: "casas independientes"
+          - id: 4
+            name: "locales comerciales"
+          - id: 5
+            name: "lotes baldios"
+          - id: 6
+            name: "hospitales"
+          - id: 7
+            name: "supermercados"
+          - id: 8
+            name: "colegios"
+          - id: 9
+            name: "parques"
+          - id: 10
+            name: "iglesias"
+          - id: 11
+            name: "restaurantes"
+          - id: 12
+            name: "zonas industriales"

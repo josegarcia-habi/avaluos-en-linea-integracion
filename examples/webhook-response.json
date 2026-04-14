@@ -3,6 +3,7 @@
     "fua_document": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Ffua_document_TEST-2.pdf",
     "data": {
         "reference": "TEST-2",
+        "origin": "habi",
         "service_priority": "alta",
         "inspection_date": "2026-02-16",
         "requester": {
@@ -20,12 +21,19 @@
                 "city_code": "11001",
                 "state_name": "Quindio",
                 "city_name": "Armenia",
-                "neighborhood": null
+                "neighborhood": "Centro"
             },
-            "property_legal": null,
+            "property_legal": {
+                "property_registration": "50C-123456",
+                "cadastral_chip": "1234567890123",
+                "property_coefficient": 0.0085,
+                "certificate_of_tradition": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2/docs/certificado_tradicion.pdf",
+                "property_tax": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2/docs/boleta_predial.pdf",
+                "deed_acquisition": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2/docs/escritura.pdf"
+            },
             "latitude": 4.684151,
             "longitude": -74.150922,
-            "stratum": null,
+            "stratum": 4,
             "property_type": {
                 "general": "urbano",
                 "subtype": 1,
@@ -44,27 +52,27 @@
         ],
         "physical_characteristics": {
             "areas_m2": {
-                "private_area": null,
+                "private_area": 38.5,
                 "constructed_area": 40.0,
-                "terrace_area": null
+                "terrace_area": 4.0
             },
             "layout": {
                 "bedrooms": 2,
                 "bathrooms": 2,
-                "study": null,
+                "study": true,
                 "floor_number": 15,
                 "elevator": false
             },
             "construction": {
-                "build_age": 3,
+                "build_year": 2022,
                 "conservation_state": "bueno",
                 "finishes_level": "terminado"
             }
         },
         "photos": [
             {
-                "label": "fachada_principal",
-                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Ffachada_principal_TEST-2.jpeg"
+                "label": "fachada_exterior",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Ffachada_exterior_TEST-2.jpeg"
             },
             {
                 "label": "acceso_porteria",
@@ -133,6 +141,38 @@
             {
                 "label": "afectaciones_danos_humedades",
                 "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fafectaciones_danos_humedades_TEST-2.jpeg"
+            },
+            {
+                "label": "otros",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fotros_1_TEST-2.jpeg"
+            },
+            {
+                "label": "otros",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fotros_2_TEST-2.jpeg"
+            },
+            {
+                "label": "contador_gas",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fcontador_gas_TEST-2.jpeg"
+            },
+            {
+                "label": "contador_luz",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fcontador_luz_TEST-2.jpeg"
+            },
+            {
+                "label": "contador_agua",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Fcontador_agua_TEST-2.jpeg"
+            },
+            {
+                "label": "fachada_edificio",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Ffachada_edificio_TEST-2.jpeg"
+            },
+            {
+                "label": "fachada_inmueble",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Ffachada_inmueble_TEST-2.jpeg"
+            },
+            {
+                "label": "interior_general",
+                "url": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fimages%2Finterior_general_TEST-2.jpeg"
             }
         ],
         "building_context": {
@@ -151,12 +191,20 @@
                 2,
                 3
             ],
+            "access_roads_condition": "bueno",
+            "neighbors_built": true,
+            "surrounding_constructions": [
+                2,
+                4
+            ],
             "building_description": {
                 "total_tower_count": 1,
-                "total_units_count": 1,
-                "units_per_floor": null,
-                "total_building_floors": 1,
-                "basement_count": null
+                "total_units_count": 120,
+                "units_per_floor": 8,
+                "total_building_floors": 15,
+                "basement_count": 2,
+                "total_garages": 180,
+                "total_storages": 90
             }
         },
         "webhook_url": "https://webhook.site/d04345ab-618b-4852-86e9-e99dc6ffa186",
