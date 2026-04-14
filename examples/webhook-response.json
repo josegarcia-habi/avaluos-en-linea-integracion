@@ -32,7 +32,16 @@
                 "ph_regime": true
             }
         },
-        "owners": [],
+        "owners": [
+            {
+                "name": "María",
+                "lastname": "González",
+                "id_type": "cc",
+                "identification": "1234567890",
+                "check_digit": null,
+                "owner_identification": "https://tinmob-images.s3.us-east-1.amazonaws.com/TEST-2%2Fowners%2Fcedula_TEST-2.pdf"
+            }
+        ],
         "physical_characteristics": {
             "areas_m2": {
                 "private_area": null,

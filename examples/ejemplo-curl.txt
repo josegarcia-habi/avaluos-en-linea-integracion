@@ -41,14 +41,15 @@ curl --location 'https://services.avaluoenlinea.com/fua-service/' \
       "name": "María",
       "lastname": "González",
       "id_type": "cc",
-      "identification": 1234567890,
+      "identification": "1234567890",
       "owner_identification": "https://tinmob-images.s3.us-east-1.amazonaws.com/TES-07/docs/TES-07.pdf"
     },
     {
       "name": "Habi",
       "lastname": "Renta 4",
       "id_type": "nit",
-      "identification": 901068287,
+      "identification": "901068287",
+      "check_digit": "8",
       "owner_identification": null
     }
   ],
